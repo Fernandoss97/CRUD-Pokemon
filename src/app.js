@@ -81,7 +81,7 @@ app.put("/pokemons/:id", (req, res) => {
   pokemons[index].type2 = req.body.type2;
   pokemons[index].is_legendary = req.body.is_legendary;
   pokemons[index].updatedAt = updatedAt;
-  
+
   res.json(pokemons);
 });
 
