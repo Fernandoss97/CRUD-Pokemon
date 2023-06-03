@@ -1,72 +1,76 @@
 import express from "express";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
+import { Pokemon, pokemons } from "./config/database.js";
+//import routes from "./routes/index.js";
 
-// const { Pokemon, pokemons } = require('./config/database.js')
 
-const app = express()
+const app = express();
 
-app.use(express.json())
-
-// const pokemons = [
-//   {id: 1, "name": "Pikachu"},
-//   {id: 2, "name": "Bulbassaur"}
-// ]
-
-class Pokemon{
-  constructor(id, attack, defense, hp, name, pokedex_number, speed, type1, type2, is_legendary, createdAt,  updatedAt){
-    
-    this.id = id;
-    this.attack = attack;
-    this.defense = defense;
-    this.hp = hp;
-    this.name = name;
-    this.pokedex_number = pokedex_number;
-    this.speed = speed;
-    this.type1 = type1;
-    this.type2 = type2;
-    this.is_legendary = is_legendary;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
-  }
-}
-
-const pokemons = [];
+app.use(express.json());
+//routes(app)
 
 app.get('/', (req,res) =>{
   res.status(200).send('Pokemon');
 })
 
-app.get('/pokemons', (req,res) =>{
-  res.status(200).json(pokemons)
-})
+app.get("/pokemons", (req, res) => {
 
-app.get('/pokemons/:id', (req,res) =>{
+  if ((pokemons.length) < 1) {
+    res.send('Não há Pokemons cadastrados');
+  }
+
+  const query = req.query;
+  console.log(query);
+
+  res.status(200).json(pokemons);
+});
+
+app.get("/pokemons/:id", (req, res) => {
   let index = buscaPokemon(req.params.id);
-  res.json(pokemons[index]);
-})
 
-app.post('/pokemons', (req, res) =>{
-  const {attack, defense, hp, name, speed, type1, type2, is_legendary} = req.body;
+   if(index === -1){
+     return res.status(404).json({error: 'Pokemon não encontrado'});
+   }
+
+  res.json(pokemons[index]);
+});
+
+app.post("/pokemons", (req, res) => {
+
+  // if(pokemons.findIndex((pokemon)=> pokemon.id === req.params.id)){
+  //   return res.status(400).json({error: 'Pokemon já cadastrado'})
+  // }
+
+  const { attack, defense, hp, name, speed, type1, type2, is_legendary } =
+    req.body;
   const id = uuidv4();
   const pokedex_number = pokemons.length;
   const createdAt = new Date();
 
-  const newPokemon = {id, attack, defense, hp, name, pokedex_number: pokedex_number + 1, speed, type1, type2, is_legendary, createdAt};
+  const newPokemon = {
+    id,
+    attack,
+    defense,
+    hp,
+    name,
+    pokedex_number: pokedex_number + 1,
+    speed,
+    type1,
+    type2,
+    is_legendary,
+    createdAt,
+  };
   pokemons.push(newPokemon);
 
-  // pokemons.push(req.body);
-  res.status(201).send('Pokemon cadastrado com sucesso')
-})
+  res.status(201).send("Pokemon cadastrado com sucesso");
+});
 
-app.put('/pokemons/:id', (req,res) =>{
+app.put("/pokemons/:id", (req, res) => {
   let index = buscaPokemon(req.params.id);
-  const {id} = req.params;
-  const {attack, defense, hp, name, speed, type1, type2, is_legendary} = req.body;
+  const { id } = req.params;
+  const { attack, defense, hp, name, speed, type1, type2, is_legendary } =
+    req.body;
   const updatedAt = new Date();
-
-  // if(!index){
-  //   return res.status(404).json({error: 'Pokemon não encontrado'});
-  // }
 
   pokemons[index].attack = req.body.attack;
   pokemons[index].defense = req.body.defense;
@@ -77,18 +81,20 @@ app.put('/pokemons/:id', (req,res) =>{
   pokemons[index].type2 = req.body.type2;
   pokemons[index].is_legendary = req.body.is_legendary;
   pokemons[index].updatedAt = updatedAt;
+  
   res.json(pokemons);
-})
+});
 
-app.delete('/pokemons/:id', (req,res) =>{
-  let {id} = req.params;
+app.delete("/pokemons/:id", (req, res) => {
+  let { id } = req.params;
   let index = buscaPokemon(id);
-  pokemons.splice (index, 1);
+  pokemons.splice(index, 1);
   res.send(`Pokemon ${id} removido com sucesso`);
-})
+});
 
-function buscaPokemon(id){
-  return pokemons.findIndex(pokemon => pokemon.id == id);
+function buscaPokemon(id) {
+
+  return pokemons.findIndex((pokemon) => pokemon.id == id);
 }
 
-export default app
+export default app;
