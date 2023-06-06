@@ -6,10 +6,9 @@ const routes = (app) =>{
     res.status(200).send('Pokemon')
   })
 
-  app.use(
-    express.json(),
-    pokemons
-  )
+  app.use(express.json())
+  app.use(pokemons)
+  
  }
 
 export default routes;

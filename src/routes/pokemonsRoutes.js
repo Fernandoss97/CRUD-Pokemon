@@ -5,5 +5,8 @@ const router = express.Router();
 
 router
   .get("/pokemons", PokemonsController.listarPokemons)
-
+  .get("/pokemons/:id", PokemonsController.bucaPokemonporId)
+  .post("/pokemons", PokemonsController.cadastrarPokemon)
+  .put("/pokemons/:id", PokemonsController.atualizarPokemon)
+  .delete("/pokemons/:id", PokemonsController.excluirPokemon)
 export default router;
